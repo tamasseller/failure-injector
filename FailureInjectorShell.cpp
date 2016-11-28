@@ -28,8 +28,8 @@ const char* FailureInjectorShell::prefix = "*** SYNTHETIC *** ";
 FailureInjectorShell::FailureInjectorShell(UtestShell &testShell, unsigned int nRecords, SourceRecord* records, bool sharedMode):
 		nRecords(nRecords),
 		records(records),
-		sharedMode(sharedMode),
-		newName(0)
+		newName(0),
+		sharedMode(sharedMode)
 {
 	setFileName(SimpleStringHelper::copyString(testShell.getFile()));
 	setLineNumber(testShell.getLineNumber());
@@ -53,7 +53,7 @@ void FailureInjectorShell::runOneTest(TestPlugin* plugin, TestResult& result)
 
 	this->result = &result;
 
-	for(int i = 0; i < nRecords; i++) {
+	for(unsigned int i = 0; i < nRecords; i++) {
 		unsigned int &errorAt = accessErrorAt(records[i].source);
 		errorAt++;
 		if(!sharedMode) {
@@ -69,7 +69,7 @@ void FailureInjectorShell::runOneTest(TestPlugin* plugin, TestResult& result)
 
 	if(!sharedMode) {
 		bool first = true;
-		for(int i = 0; i < nRecords; i++) {
+		for(unsigned int i = 0; i < nRecords; i++) {
 			unsigned int &errorAt = accessErrorAt(records[i].source);
 			if(errorAt) {
 				if(!first) {
@@ -97,7 +97,7 @@ void FailureInjectorShell::runOneTest(TestPlugin* plugin, TestResult& result)
 
 	bool isLast = true;
 	if(savedFailureCount == result.getFailureCount()) {
-		for(int i = 0; i < nRecords; i++) {
+		for(unsigned int i = 0; i < nRecords; i++) {
 			if(accessErrorAt(records[i].source) != records[i].max) {
 				isLast = false;
 				break;
@@ -106,7 +106,7 @@ void FailureInjectorShell::runOneTest(TestPlugin* plugin, TestResult& result)
 	}
 
 	if(isLast) {
-		for(int i = 0; i < nRecords; i++)
+		for(unsigned int i = 0; i < nRecords; i++)
 			accessErrorAt(records[i].source) = 0;
 
 		addTest(savedNext);

@@ -30,10 +30,10 @@ FailureInjectorPlugin::FailureInjectorPlugin():
 		TestPlugin("FailureInjector"),
 		leaveAloneCurrent(false),
 		letNextAssertPass(false),
+		countingEnabled(true),
 		activeShell(0),
 		savedFailureCount(0),
 		traceValid(false),
-		countingEnabled(true),
 		sharedMode(false) {}
 
 void FailureInjectorPlugin::setBacktraceFactory(BacktraceFactory* factory) {
@@ -71,13 +71,11 @@ void FailureInjectorPlugin::postTestAction(UtestShell& test, TestResult& result)
 			nIter = nIter - 1;
 
 			if(nSources) {
-				static char temp[256];
-
 				const int effIter = sharedMode ? accessSharedCounter() : nIter;
 				const long eta = effIter * result.getCurrentTestTotalExecutionTime();
 				if(eta > 1000) {
 					static char temp[128];
-					sprintf(temp, "\nWARNING: Generating many (%d) synthetic tests for %s in group %s. \n\n\tETA: %dms.\n\n", effIter, test.getName().asCharString(), test.getGroup().asCharString(), eta);
+					sprintf(temp, "\nWARNING: Generating many (%d) synthetic tests for %s in group %s. \n\n\tETA: %dms.\n\n", effIter, test.getName().asCharString(), test.getGroup().asCharString(), (int)eta);
 					result.print(temp);
 				}
 
@@ -95,7 +93,7 @@ void FailureInjectorPlugin::postTestAction(UtestShell& test, TestResult& result)
 
 				const unsigned int objSize = sizeof(FailureInjectorShell);
 				void *obj = defaultNewAllocator()->alloc_memory(objSize, __FILE__, __LINE__);
-				FailureInjectorShell* syntheticCase = new (obj) FailureInjectorShell(test, nSources, sources, sharedMode);
+				new (obj) FailureInjectorShell(test, nSources, sources, sharedMode);
 			}
 
 			sharedMode = false;
