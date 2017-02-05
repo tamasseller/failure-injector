@@ -53,7 +53,7 @@ void Addr2line::start() {
 
 static char addr2LineBuffer[1024];
 const char* Addr2line::convert(void* arg) {
-	sprintf(addr2LineBuffer, "%X\n", (int)arg);
+	sprintf(addr2LineBuffer, "%p\n", arg);
 	write(mosi, addr2LineBuffer, strlen(addr2LineBuffer));
 	addr2LineBuffer[read(miso, addr2LineBuffer, sizeof(addr2LineBuffer))-1] = '\0';
 	return basename(addr2LineBuffer);
